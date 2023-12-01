@@ -1,0 +1,5 @@
+YEAR=2021
+DAY=18
+FILE='input'
+VIEW=False
+PART2=True

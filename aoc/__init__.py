@@ -1,0 +1,1 @@
+from aoc.main import main
