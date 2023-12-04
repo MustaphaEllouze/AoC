@@ -59,6 +59,30 @@ class Map:
     def right(self, line:int, column:int)->tuple[int]|None:
         return (line, column+1) if 0<=column<self.width-1 and 0<=line<=self.height-1 else None
     
+    def line_neighbours(self, line:int, column:int)->tuple[tuple[int]]:
+            return tuple(
+                [
+                    neighbour
+                    for neighbour in [
+                        self.left(line, column),
+                        self.right(line, column),
+                    ]
+                    if neighbour is not None
+                ]
+            )
+    
+    def column_neighbours(self, line:int, column:int)->tuple[tuple[int]]:
+            return tuple(
+                [
+                    neighbour
+                    for neighbour in [
+                        self.up(line, column),
+                        self.down(line, column),
+                    ]
+                    if neighbour is not None
+                ]
+            )
+
     def cardinal_neighbours(self, line:int, column:int)->tuple[tuple[int]]:
         return tuple(
             [
