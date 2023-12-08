@@ -1,9 +1,9 @@
 class SuperString(str):
     """Additional functions for strings that are adapted to AoC"""
 
-    def split(self, characters:str|list[str])->list[str]:
+    def split(self, characters:str|list[str]=None)->list[str]:
         """Can now split with several characters! No need for Regex"""
-        if isinstance(characters, str):
+        if characters is None or isinstance(characters, str):
             return super().split(characters)
         elif isinstance(characters, list):
             if any([not isinstance(e, str) for e in characters]):

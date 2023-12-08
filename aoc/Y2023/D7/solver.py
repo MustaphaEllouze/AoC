@@ -1,5 +1,5 @@
 from typing import Any
-from aoc.tools import ABCSolver
+from aoc.tools import ABCSolver, jokerize
 
 class Solver(ABCSolver) : 
 
@@ -68,19 +68,11 @@ class Solver(ABCSolver) :
 
 
         def joker(hand: str) -> list[Hand]:
-            parser = Hand(hand)
-            result = [hand]
-            if parser.char1 == "J":
-                result = [c + h[1:] for h in result for c in NOJOK]
-            if parser.char2 == "J":
-                result = [h[:1] + c + h[2:] for h in result for c in NOJOK]
-            if parser.char3 == "J":
-                result = [h[:2] + c + h[3:] for h in result for c in NOJOK]
-            if parser.char4 == "J":
-                result = [h[:3] + c + h[4:] for h in result for c in NOJOK]
-            if parser.char5 == "J":
-                result = [h[:4] + c for h in result for c in NOJOK]
-            return result
+            return jokerize(
+                hand, 
+                original_character='J',
+                new_characters=NOJOK,
+            )
 
 
         class HandJoker:
