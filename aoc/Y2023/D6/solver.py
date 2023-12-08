@@ -1,5 +1,6 @@
 from typing import Any
 from aoc.tools import ABCSolver
+from math import floor
 
 class Solver(ABCSolver):
 
@@ -14,7 +15,11 @@ class Solver(ABCSolver):
             delta = tmax**2 - 4*threshold
             x1 = (tmax-delta**0.5)/2
             x2 =  (tmax+delta**0.5)/2
-            return len([e for e in range(int(x1), int(x2)+1) if x1<e<x2])
+            result = 0
+            if floor(x1)==x1 : result -= 1
+            if floor(x2)==x2 : result -= 1
+            result += int(x2)-int(x1)
+            return result
 
         if not part2 : 
             respart1 = 1
