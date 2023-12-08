@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod, abstractclassmethod
+from aoc.tools.superstring import SuperString
 import os
 import datetime
 from typing import Any
@@ -10,7 +11,7 @@ class ABCSolver(ABC):
             input_file:str,
     )->None:
         with open(f'{folder}/input/{input_file}', 'r') as f:
-            self.data = [line.strip() for line in f.readlines()]
+            self.data = [SuperString(line.strip()) for line in f.readlines()]
         self.dataname = input_file
         self.folder=folder
     
