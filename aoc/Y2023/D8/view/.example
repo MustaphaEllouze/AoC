@@ -1,0 +1,2 @@
+{'AAA': {'L': 'BBB', 'R': 'BBB'}, 'BBB': {'L': 'AAA', 'R': 'ZZZ'}, 'ZZZ': {'L': 'ZZZ', 'R': 'ZZZ'}}
+    Solved on 2023-12-08 08:44:08.299826
