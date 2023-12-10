@@ -1,5 +1,5 @@
-YEAR=2021
-DAY=18
+YEAR=2023
+DAY=10
 FILE='input'
-VIEW=False
+VIEW=True
 PART2=True
