@@ -19,7 +19,7 @@ class ABCSolver(ABC):
     def solve(self, part2:bool=False, )->tuple[Any, str]:
         """Returns result that should be written in AoC site.
         Returns: structure that computed solution ; solution"""
-        raise NotImplementedError()
+        return 'No structure', 'No solution'
     
     def export_result(self, part2:bool=False)->tuple[Any, str]:
         """Writes the result in output directory."""
@@ -34,7 +34,7 @@ class ABCSolver(ABC):
     @abstractmethod
     def generate_view(self, structure:Any)->str:
         """Generate a view for control."""
-        raise NotImplementedError()
+        return str(structure)
 
     def export_view(self, structure:Any)->str:
         """Writes the view in view directory."""
