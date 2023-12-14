@@ -1,0 +1,2 @@
+([], 'Find the length of the cycle then find index such as index%length == (1e9-1)%length, and index>first number that starts the loop. Yes, this is cheating.')
+    Solved on 2023-12-14 09:20:55.143180

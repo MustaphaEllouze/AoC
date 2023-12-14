@@ -34,7 +34,7 @@ class ABCSolver(ABC):
     @abstractmethod
     def generate_view(self, structure:Any)->str:
         """Generate a view for control."""
-        return str(structure)
+        return '\n'+str(structure)
 
     def export_view(self, structure:Any)->str:
         """Writes the view in view directory."""
