@@ -52,6 +52,9 @@ class Checker:
             case Operations.EQ : 
                 return partattr==self.value
     
+    def __str__(self) -> str:
+        return f'{self.attribute.value}{self.operation.value}{self.value}'
+    
     @classmethod
     def from_input(cls, input:str)->'Checker':
         attribute = input[0]
@@ -135,15 +138,19 @@ ACCEPTED = Classifier('ACCEPTED', None, None, None)
 REFUSED = Classifier('REFUSED', None, None, None)
 
 def classify(part:Part, classifier:Classifier)->bool:
-    # print(part)
-    if classifier is ACCEPTED : return True
-    elif classifier is REFUSED : return False
+    if classifier is ACCEPTED : 
+        print('-----------> ACCEPTED')
+        return True
+    elif classifier is REFUSED : 
+        print('-----------> REFUSED')
+        return False
     else:
+        print('Classifying',part,'with', classifier.name, str(classifier.checker),classifier.o1, classifier.o2)
         if classifier.checker.evaluate(part) : 
-            # print(classifier.o1)
+            print('    Now classifying',part,'with', classifier.o1)
             return classify(part, Classifier.CLASSIFIERS[classifier.o1])
         else:
-            # print(classifier.o2)
+            print('    Now classifying',part,'with', classifier.o2)
             return classify(part, Classifier.CLASSIFIERS[classifier.o2])
 
 class Solver(ABCSolver):
