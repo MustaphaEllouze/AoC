@@ -39,3 +39,7 @@ def jokerize(
             else:
                 result.append(old_guy)
         return result
+
+def flatten_one_level(iterable:Iterable):
+    for sub_liste in iterable : assert isinstance(sub_liste, (list, tuple))
+    return type(iterable)([element for sub_liste in iterable for element in sub_liste])

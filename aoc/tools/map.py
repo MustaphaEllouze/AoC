@@ -126,3 +126,8 @@ class Map:
 
     def inifite_iterator(self, ):
         return cycle(self.iterator)
+    
+    def find(self, value:Any)->tuple[int, int]|None:
+        for iter in self.iterator:
+            if self(*iter) == value : return iter
+        return None
