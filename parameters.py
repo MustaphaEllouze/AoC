@@ -1,5 +1,11 @@
 YEAR=2023
-DAY=17
-FILE='input'
+DAY=20
+FILE='max'
 VIEW=True
-PART2=True
+PART2=False
+
+# 594606455175141 --> too low
+# 594606492802848
+
+# 6078 --> too low
+# 6490 
