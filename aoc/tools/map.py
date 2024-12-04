@@ -59,6 +59,26 @@ class Map:
     def right(self, line:int, column:int)->tuple[int]|None:
         return (line, column+1) if 0<=column<self.width-1 and 0<=line<=self.height-1 else None
     
+    def upright(self, line:int, column:int)->tuple[int]|None:
+        up = self.up(line=line, column=column)
+        if not up : return None
+        return self.right(*up)
+    
+    def downright(self, line:int, column:int)->tuple[int]|None:
+        down = self.down(line=line, column=column)
+        if not down : return None
+        return self.right(*down)
+    
+    def upleft(self, line:int, column:int)->tuple[int]|None:
+        up = self.up(line=line, column=column)
+        if not up : return None
+        return self.left(*up)
+    
+    def downleft(self, line:int, column:int)->tuple[int]|None:
+        down = self.down(line=line, column=column)
+        if not down : return None
+        return self.left(*down)
+    
     def line_neighbours(self, line:int, column:int)->tuple[tuple[int]]:
             return tuple(
                 [
@@ -103,18 +123,11 @@ class Map:
             self.down(line, column),
             self.left(line, column),
             self.right(line, column),
+            self.upright(line, column),
+            self.downright(line, column),
+            self.upleft(line, column),
+            self.downleft(line, column),
         ]
-
-        if list_to_check_from[0] is not None:
-            list_to_check_from += [
-                self.right(*list_to_check_from[0]),
-                self.left(*list_to_check_from[0]),
-            ]
-        if list_to_check_from[1] is not None:
-            list_to_check_from += [
-                self.right(*list_to_check_from[1]),
-                self.left(*list_to_check_from[1]),
-            ]
         
         return tuple(
             [
@@ -131,3 +144,10 @@ class Map:
         for iter in self.iterator:
             if self(*iter) == value : return iter
         return None
+    
+    def findall(self, value:Any)->tuple[tuple[int, int]]|None:
+        finds = ()
+        for iter in self.iterator:
+            if self(*iter) == value : finds += ((iter),)
+        if finds == () : return None
+        return finds
