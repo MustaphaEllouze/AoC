@@ -1,9 +1,8 @@
 from typing import Any
 from aoc.tools import ABCSolver
-
-from collections import defaultdict
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
+import os
 
 from aoc.tools.map import Map
 
@@ -64,6 +63,14 @@ def does_it_finish(map_init:Map, pos_line_obs:int, pos_col_obs:int)->tuple[Map,i
     
     return map.map, len(map.findall(value='X')), True
 
+def check_dot(map:Map, dot:tuple[int, int]):
+    copy_map = deepcopy(map)
+    copy_map.map[*dot] = '#'
+    return does_it_finish(
+        map_init=copy_map, 
+        pos_line_obs=dot[0],
+        pos_col_obs=dot[1],
+        )[2]
 
 class Solver(ABCSolver):
 
@@ -85,17 +92,20 @@ class Solver(ABCSolver):
 
             result = 0
 
-            for i,possible_dot in enumerate(all_dots): 
-                print(f'{i}/{len(all_dots)}', end='\r')
-                copy_map = deepcopy(map)
-                copy_map.map[*possible_dot] = '#'
-                if not does_it_finish(
-                    map_init=copy_map, 
-                    pos_line_obs=possible_dot[0],
-                    pos_col_obs=possible_dot[1],
-                    )[2]:
-                    print(possible_dot)
-                    result += 1
+            def process_dot(dot):
+                is_loop = not check_dot(map, dot)
+                if is_loop : print(f"Loop found: {dot}")
+                return is_loop
+
+            with ThreadPoolExecutor() as executor:
+                futures = []
+                for dot in all_dots:
+                    future = executor.submit(process_dot, dot)
+                    futures.append(future)
+
+                for i,future in enumerate(as_completed(futures)):
+                    print(f'{i}/{len(all_dots)}', end='\r')
+                    result += int(future.result())
                 
             return None, result
 
