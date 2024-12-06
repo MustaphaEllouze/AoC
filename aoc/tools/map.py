@@ -1,6 +1,22 @@
 import numpy as np
-from typing import Any
+from typing import Any, Self
 from itertools import cycle
+from enum import Enum
+
+class DirectionEnum(Enum):
+    RIGHT = 'R'
+    LEFT = 'L'
+    UP = 'U'
+    DOWN = 'D'
+
+    @classmethod
+    def get(cls, value:str)->Self:
+        return {
+            'U' : DirectionEnum.UP,
+            'D' : DirectionEnum.DOWN,
+            'R' : DirectionEnum.RIGHT,
+            'L' : DirectionEnum.LEFT,
+        }.get(value, None)
 
 class Map:
     """Represents a 2D map.
@@ -151,3 +167,32 @@ class Map:
             if self(*iter) == value : finds += ((iter),)
         if finds == () : return None
         return finds
+    
+    def direction_iterator(self, line:int, column:int, direction:DirectionEnum):
+        match direction:
+            case DirectionEnum.RIGHT : 
+                return ((line, y) for y in range(column+1, self.width))
+            case DirectionEnum.LEFT : 
+                return ((line, y) for y in range(0, column-1)[::-1])
+            case DirectionEnum.UP : 
+                return ((x, column) for x in range(0, line-1)[::-1])
+            case DirectionEnum.DOWN : 
+                return ((x, column) for x in range(line+1, self.height))
+
+    def find_in_direction(
+            self,
+            line:int,
+            column:int,
+            direction:str,
+            value:Any,
+        )->tuple[int, int]:
+
+        for dir_neigh in self.direction_iterator(
+            line=line,
+            column=column,
+            direction=DirectionEnum.get(value=direction)
+        ) :
+            if self(*dir_neigh) == value :
+                return dir_neigh
+        
+        return None
