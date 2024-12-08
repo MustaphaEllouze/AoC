@@ -9,7 +9,7 @@ class Solver(ABCSolver):
 
     def solve(self, part2:bool=False) ->tuple[Any, str]:
 
-        map = Map([list(e) for e in self.data])
+        map = Map(raw_data=self.data)
         antennas : dict[str, list[tuple[int, int]]] = defaultdict(list)
         antinodes : dict[str, list[tuple[int, int]]] = defaultdict(list)
 

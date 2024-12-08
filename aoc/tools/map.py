@@ -26,13 +26,19 @@ class Map:
     
     def __init__(
         self,
-        array:np.ndarray | list[list[Any]],
+        array:np.ndarray | list[list[Any]] = None,
+        raw_data:list[str]=None,
     ) -> None:
         """Create object from numpy array or list of lists"""
-        if isinstance(array, np.ndarray):
-            self.map=array
-        else:
-            self.map=np.array(array)
+        if array :
+            if isinstance(array, np.ndarray):
+                self.map=array
+            else:
+                self.map=np.array(array)
+        elif raw_data :
+            self.map = np.array([list(line) for line in raw_data])
+        else : 
+            raise ValueError(f'Either raw_data or array must be given')
     
         self.datatype = type(self(0,0))
     
