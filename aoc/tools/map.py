@@ -38,7 +38,13 @@ class Map:
     
     def __call__(self, line:int, column:int) -> Any:
         """Allows pseudo-subscription with parenthesis."""
-        return self.map[line, column]
+        if 0<=line<self.height and 0<=column<self.width:
+            return self.map[line, column]
+        else:
+            return None
+
+    def __str__(self, ) -> str:
+        return "\n".join(["".join(line) for line in self.map])
     
     @property
     def iterator(self, )->tuple[tuple[int]]:
