@@ -28,6 +28,7 @@ class Map:
         self,
         array:np.ndarray | list[list[Any]] = None,
         raw_data:list[str]=None,
+        conversion_int:bool=False,
     ) -> None:
         """Create object from numpy array or list of lists"""
         if array :
@@ -39,6 +40,9 @@ class Map:
             self.map = np.array([list(line) for line in raw_data])
         else : 
             raise ValueError(f'Either raw_data or array must be given')
+
+        if conversion_int :
+            self.map = self.map.astype(np.int_)
     
         self.datatype = type(self(0,0))
     
@@ -50,7 +54,7 @@ class Map:
             return None
 
     def __str__(self, ) -> str:
-        return "\n".join(["".join(line) for line in self.map])
+        return "\n".join(["".join([str(e) for e in line]) for line in self.map])
     
     @property
     def iterator(self, )->tuple[tuple[int]]:
