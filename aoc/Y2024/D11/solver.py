@@ -2,6 +2,8 @@ from typing import Any
 from aoc.tools import ABCSolver
 from functools import cache
 
+from collections import defaultdict
+
 @cache
 def blink(number:int)->tuple[int,int]:
     if number == 0 :
@@ -15,19 +17,19 @@ class Solver(ABCSolver):
 
     def solve(self, part2:bool=False) ->tuple[Any, str]:
 
-        result = 0
+        stones = defaultdict(int)
+        for stone in self.data[0].split():
+            stones[int(stone)] += 1
 
-        stones = [int(e) for e in self.data[0].split()]
-
-        for i in range(25):
-            new_stones = []
-            for stone in stones:
+        for i in range(25+50*part2):
+            new_stones = defaultdict(int)
+            for stone, number in stones.items():
                 s1, s2 = blink(number=stone)
-                new_stones.append(s1)
-                if s2 is not None : new_stones.append(s2)
+                if s1: new_stones[s1] += number
+                if s2 is not None : new_stones[s2] += number
             stones = new_stones
-                
-        return stones, len(stones)
+
+        return stones, sum([e for e in stones.values()])
 
 
     def generate_view(self, structure: Any) -> str:
