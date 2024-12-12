@@ -135,8 +135,13 @@ class Map:
                 ]
             )
 
-    def cardinal_neighbours(self, line:int, column:int)->tuple[tuple[int]]:
-        return tuple(
+    def cardinal_neighbours(
+            self, 
+            line:int, 
+            column:int, 
+            filter_none:bool=True,
+        )->tuple[tuple[int]]:
+        unfiltered = tuple(
             [
                 neighbour
                 for neighbour in [
@@ -145,9 +150,11 @@ class Map:
                     self.left(line, column),
                     self.right(line, column),
                 ]
-                if neighbour is not None
             ]
         )
+
+        if not filter_none : return unfiltered
+        else : return tuple(e for e in unfiltered if e)
 
     def neighbours(self, line:int, column:int)->tuple[tuple[int]]:
         list_to_check_from = [
@@ -212,3 +219,10 @@ class Map:
                 return dir_neigh
         
         return None
+
+    def is_on_edge(
+            self,
+            line:int,
+            column:int,
+    )->bool:
+        return line==0 or line==self.height or column==0 or column==self.width
