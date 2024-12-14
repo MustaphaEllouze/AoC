@@ -74,7 +74,7 @@ class Solver(ABCSolver):
     
         else :
 
-            TIME = 1100
+            TIME = 0
 
             num_max_rob = max(pos_x.keys())+1
 
