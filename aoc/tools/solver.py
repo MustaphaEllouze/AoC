@@ -11,7 +11,8 @@ class ABCSolver(ABC):
             input_file:str,
     )->None:
         with open(f'{folder}/input/{input_file}', 'r') as f:
-            self.data = [SuperString(line.strip()) for line in f.readlines()]
+            self.data_unstripped = [SuperString(line) for line in f.readlines()]
+            self.data = [line.strip() for line in self.data_unstripped]
         try: self.data_map_ready = [[char for char in line]for line in self.data]
         except : pass
         self.dataname = input_file
