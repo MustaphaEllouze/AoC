@@ -15,7 +15,6 @@ DIRECTIONS = {
 class Block:
     movable:bool
     position:tuple[int, int]
-    position2:tuple[int, int]
     symbol:str
     want_push:bool
     propagates:bool
@@ -31,19 +30,13 @@ class Problem:
         self.blocks:dict[tuple[int, int]:Block] = {}
         for position in map.iterator:
             symbol = map(*position)
-            if symbol == ']' : 
-                self.blocks[position] = self.blocks[
-                    (position[0], position[1]-1)
-                ]
-            else:
-                self.blocks[position] = Block(
-                    movable= (symbol!='#'),
-                    position=position,
-                    position2=(position[0], position[1]+1) if symbol=='[' else None,
-                    symbol=symbol,
-                    want_push=False,
-                    propagates=not (symbol in ['#', '.']),
-                )
+            self.blocks[position] = Block(
+                movable= (symbol!='#'),
+                position=position,
+                symbol=symbol,
+                want_push=False,
+                propagates=not (symbol in ['#', '.']),
+            )
         self.commands = commands
         self.map = map
         self.part2 = part2
@@ -64,28 +57,39 @@ class Problem:
                 case 'L':
                     propagate_those = [self.map.left(*position)]
                 case 'R':
-                    if cur_block.symbol=='[':
-                        propagate_those = [self.map.right(*self.map.right(*position))]
-                    else:
-                        propagate_those = [self.map.right(*position)]
+                    propagate_those = [self.map.right(*position)]
                 case 'D':
-                    if cur_block == '[':
+                    if cur_block.symbol == '[':
                         propagate_those = [
                             self.map.down(*position),
                             self.map.right(*self.map.down(*position)),
+                            self.map.right(*position),
+                        ]
+                    elif cur_block.symbol == ']':
+                        propagate_those = [
+                            self.map.down(*position),
+                            self.map.left(*self.map.down(*position)),
+                            self.map.left(*position),
                         ]
                     else:
                         propagate_those = [self.map.down(*position)]
                 case 'U':
-                    if cur_block == '[':
+                    if cur_block.symbol == '[':
                         propagate_those = [
                             self.map.up(*position),
                             self.map.right(*self.map.up(*position)),
+                            self.map.right(*position),
+                        ]
+                    elif cur_block.symbol == ']':
+                        propagate_those = [
+                            self.map.up(*position),
+                            self.map.left(*self.map.up(*position)),
+                            self.map.left(*position),
                         ]
                     else:
                         propagate_those = [self.map.up(*position)]
             for b in propagate_those :
-                self.blocks[*b].want_push = True
+                self.blocks[b].want_push = True
             return propagate_those
 
     
@@ -119,48 +123,23 @@ class Problem:
                     [self.blocks[e] for e in all_blocks_wanting],
             ):
                 if b.symbol == '.' : continue
-                if b.symbol != '[':
-                    match direction :
-                        case 'U' :
-                            b.position = (b.position[0]-1, b.position[1])
-                        case 'D' :
-                            b.position = (b.position[0]+1, b.position[1])
-                        case 'L' :
-                            b.position = (b.position[0], b.position[1]-1)
-                        case 'R' :
-                            b.position = (b.position[0], b.position[1]+1)
-                    self.blocks[b.position] = b 
-                # elif da_block_pos != b.position: 
-                #     print('SORRY BRO', da_block_pos, b.position)
-                #     continue
-                else: 
-                    # print(self.blocks[b.position2])
-                    # print('Wesh', b)
-                    if self.blocks[b.position2] == b :
-                        print('pop pos2', b.position2)
-                        if self.blocks[b.position2]:
-                            self.blocks.pop(b.position2)
-                            # self.blocks.pop(b.position)
-                    #     self.blocks[b.position2] = Block(
-                    #         movable=True, position=b.position2, 
-                    #         position2=None, symbol='.', want_push=False,
-                    #         propagates=False,
-                    #     )
-                    match direction :
-                        case 'U' :
-                            b.position = (b.position[0]-1, b.position[1])
-                        case 'D' :
-                            b.position = (b.position[0]+1, b.position[1])
-                        case 'L' :
-                            b.position = (b.position[0], b.position[1]-1)
-                        case 'R' :
-                            b.position = (b.position[0], b.position[1]+1)
-                    b.position2 = (b.position[0], b.position[1]+1)
-                    self.blocks[b.position] = b
-                    self.blocks[b.position2] = b
+                # print('CURRENTLY DISPLACING', b)
+                if self.blocks[b.position] is b :
+                    # print('POPED')
+                    self.blocks.pop(b.position)
+                match direction :
+                    case 'U' :
+                        b.position = (b.position[0]-1, b.position[1])
+                    case 'D' :
+                        b.position = (b.position[0]+1, b.position[1])
+                    case 'L' :
+                        b.position = (b.position[0], b.position[1]-1)
+                    case 'R' :
+                        b.position = (b.position[0], b.position[1]+1)
+                self.blocks[b.position] = b 
             self.blocks[self.cur_pos] = Block(
-                movable=True, position=self.cur_pos, 
-                position2=None, symbol='.', want_push=False,
+                movable=True, position=self.cur_pos,
+                symbol='.', want_push=False,
                 propagates=False,
             )
             match direction:
@@ -177,45 +156,38 @@ class Problem:
     def populate_missing(self):
         for pos in self.map.iterator:
             if not pos in self.blocks.keys():
-                if (pos[0], pos[1]-1) in self.blocks.keys():
-                    if self.blocks[(pos[0], pos[1]-1)].symbol == '[':
-                        self.blocks[pos] = self.blocks[(pos[0], pos[1]-1)]
-                    else:   
-                        self.blocks[pos] = Block(
-                            movable=True,
-                            position=pos,
-                            position2=None,
-                            symbol='.',
-                            want_push=False,
-                            propagates=False,
-                        )
+                self.blocks[pos] = Block(
+                    movable=True,
+                    position=pos,
+                    symbol='.',
+                    want_push=False,
+                    propagates=False,
+                )
 
     def update_map(self):
         for pos,b in self.blocks.items():
             self.map.map[*(b.position)] = b.symbol
-            if b.position2 :
-                assert b.symbol == '['
-                self.map.map[*(b.position2)] = ']'
 
     def solve(self):
         for i,c in enumerate(self.commands):
             print(f'Step {i} / {len(self.commands)}', end='\r')
-            print('direction', c)
+            # print('direction', c)
             self.advance_one_step(
                 direction=DIRECTIONS[c],
             )
             self.populate_missing()
             self.update_map()
-            print(self.map)
-            print(self.blocks[(5, 11)])
-            print(self.blocks[(6, 11)])
-            input()
+            # print(self.map)
+            # input()
     
     def get_result(self):
         result = 0
         for pos,b in self.blocks.items():
             if b.symbol == 'O' : 
                 result += pos[0]*100 + pos[1]
+            if b.symbol == '[':
+                result += pos[0]*100
+                result += pos[1]
         return result
 
 
