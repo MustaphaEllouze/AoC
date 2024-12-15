@@ -196,9 +196,9 @@ class Map:
             case DirectionEnum.RIGHT : 
                 return ((line, y) for y in range(column+1, self.width))
             case DirectionEnum.LEFT : 
-                return ((line, y) for y in range(0, column-1)[::-1])
+                return ((line, y) for y in range(0, column)[::-1])
             case DirectionEnum.UP : 
-                return ((x, column) for x in range(0, line-1)[::-1])
+                return ((x, column) for x in range(0, line)[::-1])
             case DirectionEnum.DOWN : 
                 return ((x, column) for x in range(line+1, self.height))
 
@@ -226,3 +226,28 @@ class Map:
             column:int,
     )->bool:
         return line==0 or line==self.height or column==0 or column==self.width
+
+    def list_between_two(
+            self,
+            start_line:int,
+            start_col:int,
+            end_line:int,
+            end_col:int
+    )->tuple[tuple[int, int]]:
+        if start_line == end_line:
+            return tuple(
+                (start_line, i)
+                for i in range(
+                    min(start_col, end_col),
+                    max(start_col, end_col)+1
+                )
+            )
+        if start_col==end_col:
+            return tuple(
+                (i, start_col)
+                for i in range(
+                    min(start_line, end_line),
+                    max(start_line, end_line)+1
+                )
+            )
+        raise NotImplementedError('Must be in line.')
