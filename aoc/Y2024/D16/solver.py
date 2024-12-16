@@ -30,67 +30,77 @@ class Solver(ABCSolver):
         visited = []
 
         while to_visit and pos != goal:
-            # print(len(to_visit), abs(pos[0]-goal[0])+abs(pos[1]-goal[1]))
+            print(len(to_visit), abs(pos[0]-goal[0])+abs(pos[1]-goal[1]))
             pos, direc, score, dico = to_visit.pop(0)
-            if (pos,direc) in visited : 
+            if pos in visited : 
                 continue
-            visited.append((pos, direc))
+            visited.append(pos)
 
-            insort(to_visit, (pos, clockwise[direc], score+1000, {**dico, **{pos:score+1000}}), key=lambda x:x[2])
-            insort(to_visit, (pos, trigowise[direc], score+1000, {**dico, **{pos:score+1000}}), key=lambda x:x[2])
+            up = map.up(*pos)
+            down = map.down(*pos)
+            right = map.right(*pos)
+            left = map.left(*pos)
 
-            match direc:
-                case 'U':
-                    if map(*map.up(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.up(*pos), direc, score+1, {**dico, **{map.up(*pos):score+1}}), key=lambda x:x[2])
-                case 'D':
-                    if map(*map.down(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.down(*pos), direc, score+1, {**dico, **{map.down(*pos):score+1}}), key=lambda x:x[2])
-                case 'R':
-                    if map(*map.right(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.right(*pos), direc, score+1, {**dico, **{map.right(*pos):score+1}}), key=lambda x:x[2])
-                case 'L':
-                    if map(*map.left(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.left(*pos), direc, score+1, {**dico, **{map.left(*pos):score+1}}), key=lambda x:x[2])
+            for n,d in zip([up, down, right, left], ['U', 'D', 'R', 'L']):
+                if n:
+                    if map(*n) in ['.', 'E']:
+                        insort(
+                            to_visit, 
+                            (
+                                n, 
+                                d, 
+                                score+1+1000*(d!=direc), 
+                                {**dico, **{n:score+1+1000*(d!=direc)}}
+                            ),
+                            key=lambda x:x[2]
+                        )
 
         best_dico = dico
         best_score = score
 
         if not part2 : return map, best_score
 
+        # Search all paths that lead to E
         pos = map.find(value='S')
         goal = map.find(value='E')
 
         to_visit = [(pos, 'R', 0, {pos:0})]
+        # goal_found = []
         visited = []
-
-        while to_visit and pos != goal:
-            # print(len(to_visit), abs(pos[0]-goal[0])+abs(pos[1]-goal[1]))
+        while to_visit:
+            print('PART2', len(to_visit), abs(pos[0]-goal[0])+abs(pos[1]-goal[1]))
             pos, direc, score, dico = to_visit.pop(0)
-            if pos in best_dico :
-                if best_dico[pos] == dico[pos] :
-                    print('upgrade', pos)
-                    best_dico = {**best_dico, **dico}
-            if (pos,direc) in visited : 
+            if score > best_score : break
+            if (pos,direc) in visited :
+                if pos in best_dico and best_dico[pos] == dico[pos]:
+                    best_dico.update(dico)
                 continue
             visited.append((pos, direc))
 
-            insort(to_visit, (pos, clockwise[direc], score+1000, {**dico, **{pos:score+1000}}), key=lambda x:x[2])
-            insort(to_visit, (pos, trigowise[direc], score+1000, {**dico, **{pos:score+1000}}), key=lambda x:x[2])
+            up = map.up(*pos)
+            down = map.down(*pos)
+            right = map.right(*pos)
+            left = map.left(*pos)
 
-            match direc:
-                case 'U':
-                    if map(*map.up(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.up(*pos), direc, score+1, {**dico, **{map.up(*pos):score+1}}), key=lambda x:x[2])
-                case 'D':
-                    if map(*map.down(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.down(*pos), direc, score+1, {**dico, **{map.down(*pos):score+1}}), key=lambda x:x[2])
-                case 'R':
-                    if map(*map.right(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.right(*pos), direc, score+1, {**dico, **{map.right(*pos):score+1}}), key=lambda x:x[2])
-                case 'L':
-                    if map(*map.left(*pos)) in ['.', 'E']:
-                        insort(to_visit, (map.left(*pos), direc, score+1, {**dico, **{map.left(*pos):score+1}}), key=lambda x:x[2])
+            for n,d in zip([up, down, right, left], ['U', 'D', 'R', 'L']):
+                if direc == 'U' and d == 'D' : continue
+                if direc == 'D' and d == 'U' : continue
+                if direc == 'R' and d == 'L' : continue
+                if direc == 'L' and d == 'R' : continue
+                if n:
+                    if map(*n) in ['.', 'E']:
+                        insort(
+                            to_visit, 
+                            (
+                                n, 
+                                d, 
+                                score+1+1000*(d!=direc), 
+                                {**dico, **{n:score+1+1000*(d!=direc)}}
+                            ),
+                            key=lambda x:x[2]
+                        )
+        
+        # print(len(goal_found))
 
         for pos in best_dico:
             map.map[*pos] = 'O'
