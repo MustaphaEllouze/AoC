@@ -39,22 +39,18 @@ class Solver(ABCSolver):
 
             return None, sum([len(e) for e in three_players.values()])
         else:
-            g = nx.DiGraph()
-
-            possible_result = None
+            g = nx.Graph()
 
             for c in connections : g.add_node(c)
             for line in self.data:
                 fc, sc = line.split('-')
                 g.add_edge(fc, sc)
-            for r in range(3, g.number_of_nodes())[::-1]:
-                for sub_graph in (g.subgraph(s) for s in combinations(g, r)):
-                    if sub_graph.size() == r*(r-1)/2 : 
-                        print(sub_graph.nodes)
-                        possible_result = sub_graph
-                        return None, ''.join(sorted(possible_result.nodes))
+            
+            all_cliques = nx.find_cliques(g)
 
-        
+            clique_result = max(all_cliques, key=lambda x:len(x))
+
+            return None, ','.join(sorted(clique_result))
                     
     def generate_view(self, structure: Any) -> str:
         return super().generate_view(structure)
